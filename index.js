@@ -81,21 +81,20 @@ if (opts['autocleartmp'] && (global.support || {}).find) (tmp = [os.tmpdir(), 't
 }}
 
 function clearTmp() {
-const tmp = [os.tmpdir(), join(__dirname, './tmp')];
-const files = [];
-tmp.forEach((dirname) => {
-readdirSync(dirname).forEach((file) => files.push(join(dirname, file)));
-});
-files.forEach((file) => {
+const tmp = [tmpdir(), join(__dirname, './tmp')];
+const filename = [];
+tmp.forEach((dirname) => readdirSync(dirname).forEach((file) => filename.push(join(dirname, file))));
+return filename.map((file) => {
 const stats = statSync(file);
-if (stats.isFile() && (Date.now() - stats.mtimeMs >= 180000)) {
-unlinkSync(file)}
+if (stats.isFile() && (Date.now() - stats.mtimeMs >= 1000 * 60 * 3)) {
+return unlinkSync(file); // 3 minutes
+}
+return false;
 })}
 
 setInterval(async () => {
-await clearTmp();
-console.log(chalk.cyanBright(lenguaje['tmp']()));
-}, 600000); //10 minutos
+await clearTmp()
+console.log(chalk.cyanBright(lenguaje['tmp']()))}, 180000)
 //_________________
 
 //sessions/jadibts
@@ -146,19 +145,18 @@ console.log(chalk.bold.green(`${lenguaje['archivo']()} ${file} ${lenguaje['archi
 } else {  
 console.log(chalk.bold.red(`${lenguaje['archivo']()} ${file} ${lenguaje['archborrado']()}` + err))
 } }) }) }) })}
-
 setInterval(async () => {
   await purgeSession();
   console.log(chalk.cyanBright(`${lenguaje['purgesessions']()}`));
-}, 3600000); //1 hora
+}, 1000 * 60 * 60);
 setInterval(async () => {
   await purgeSessionSB();
   console.log(chalk.cyanBright(`${lenguaje['purgesubbots']()}`));
-}, 3600000); 
+}, 1000 * 60 * 60);
 setInterval(async () => {
   await purgeOldFiles();
-  console.log(chalk.cyanBright(`${lenguaje['purgeoldfiles']()}.`));
-}, 3600000); 
+  console.log(chalk.cyanBright(`${lenguaje['purgeoldfiles']()}`));
+}, 1000 * 60 * 60);
 //___________
     
 const store = makeInMemoryStore({logger: pino().child({level: 'silent', stream: 'store' })})
@@ -535,13 +533,14 @@ let name = num
 const miembros = metadata.participants.length
 let vn = 'https://qu.ax/cUYg.mp3'
 let wel = [`${lenguaje['smsWel']()} @${name.split("@")[0]} ${lenguaje['smsWel2']()}`, `${lenguaje['smsWel']()} @${name.split("@")[0]} ${lenguaje['smsWel3']()} ${metadata.subject} 』\n\n${lenguaje['smsWel4']()}`, `${lenguaje['smsWel5']()} ${lenguaje['smsWel6']()} @${name.split("@")[0]} 🥳`]
-let or = ['texto', 'audio', 'texto2'];
+let or = ['texto', 'imagen', 'texto2'];
 let media = or[Math.floor(Math.random() * 3)]
 let welcome = wel[Math.floor(Math.random() * wel.length)]
 if (media === 'texto')
 sock.sendMessage(anu.id, { text: welcome, mentions: [num]}, {quoted: null, ephemeralExpiration: 24*60*100, disappearingMessagesInChat: 24*60*100})
-if (media === 'audio')
-sock.sendMessage(anu.id, { audio: { url: vn }, 
+if (media === 'imagen')
+sock.sendMessage(anu.id, {image: welc, caption: wel, mentions: [num]}, {quoted: null})
+/*sock.sendMessage(anu.id, { audio: { url: vn }, 
 contextInfo: { forwardedNewsletterMessageInfo: { 
 newsletterJid: '120363160031023229@newsletter', 
 serverMessageId: '', 
@@ -553,7 +552,7 @@ newsletterName: 'INFINITY-WA 💫' }, forwardingScore: 9999999, isForwarded: tru
 "thumbnail": welc, 
 "sourceUrl": `${pickRandom([md, yt])}`, 
 "showAdAttribution": true}}, 
-seconds: '4556', ptt: true, mimetype: 'audio/mpeg', fileName: `error.mp3` }, {quoted: null, ephemeralExpiration: 24*60*100, disappearingMessagesInChat: 24*60*100})
+seconds: '4556', ptt: true, mimetype: 'audio/mpeg', fileName: `error.mp3` }, {quoted: null, ephemeralExpiration: 24*60*100, disappearingMessagesInChat: 24*60*100})*/
 if (media === 'texto2')
 sock.sendMessage(anu.id, { text: `${lenguaje['smsWel7']()} ${lenguaje['smsWel']()} @${name.split("@")[0]} ${lenguaje['smsWel2']()}\n${lenguaje['smsWel8']()} ${metadata.subject}\n${lenguaje['smsWel9']()} ${miembros}\n${lenguaje['smsWel10']()} ${date}\n\n${lenguaje['smsWel11']()} \n\n${metadata.desc}`, contextInfo:{
 forwardedNewsletterMessageInfo: { 
